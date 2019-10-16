@@ -1,4 +1,4 @@
-ontextual questions about the data
+Contextual questions about the data
 
 1. **We were wondering what triggers an inspection? Is it just complaint-based or is there an inspection calendar and regular rotation?** 
 EPA and states consider several factors in determining what facilities to inspect, such as facility size, potential for environmental harm, citizen tips, geographic initiatives, statutory requirements, protection of sensitive ecosystems, demographics, industry type, and violation history. It is not possible to inspect every regulated facility every five years. Smaller facilities may receive inspections less frequently than every five years. In addition, inspections conducted at smaller facilities may be tracked only in the state database and not be entered into the federal database. The criteria used to select facilities for inspection may be different between different states and EPA Regions. You may find the ECHO FAQ page helpful (https://echo.epa.gov/resources/general-info/echo-faq#enforcement). We also recommend viewing EPA's How We Monitor Compliance page (https://www.epa.gov/compliance/how-we-monitor-compliance).
