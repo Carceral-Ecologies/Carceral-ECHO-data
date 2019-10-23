@@ -1,0 +1,111 @@
+---
+title: "ECHO and CA"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(stringdist)
+library(fastLink)
+echo <- read.csv("/Users/lpoirier/Downloads/echo_ca.csv")
+```
+
+```{r}
+prison <- read_csv("/Users/lpoirier/Downloads/Prison_Boundaries.csv")
+prison_ca <- prison %>% filter(STATE == "CA")
+```
+```{r}
+View(prison_ca)
+```
+
+
+```{r}
+prison_ca$CITY<-preprocText(prison_ca$CITY, convert_text=TRUE, tolower=TRUE, remove_whitespace=TRUE, remove_punctuation=TRUE)
+```
+
+```{r}
+prison_ca$COUNTY<-preprocText(prison_ca$COUNTY, convert_text=TRUE, tolower=TRUE, remove_whitespace=TRUE, remove_punctuation=TRUE)
+```
+
+```{r}
+prison_ca$ADDRESS<-preprocText(prison_ca$ADDRESS, convert_text=TRUE, tolower=TRUE, remove_whitespace=TRUE, usps_address=TRUE, remove_punctuation=TRUE)
+
+prison_ca$ADDRESS <- gsub(" s ", " south ", prison_ca$ADDRESS)
+prison_ca$ADDRESS <- gsub(" e ", " east ", prison_ca$ADDRESS)
+prison_ca$ADDRESS <- gsub(" n ", " north ", prison_ca$ADDRESS)
+prison_ca$ADDRESS <- gsub(" w ", " west ", prison_ca$ADDRESS)
+
+prison_ca$ADDRESS <- gsub(" ste .*", "", prison_ca$ADDRESS)
+prison_ca$ADDRESS <- gsub(" stes .*", "", prison_ca$ADDRESS)
+prison_ca$ADDRESS <- gsub(" unit .*", "", prison_ca$ADDRESS)
+prison_ca$ADDRESS <- gsub(" suite .*", "", prison_ca$ADDRESS)
+prison_ca$ADDRESS <- gsub(" apt .*", "", prison_ca$ADDRESS)
+
+prison_ca$ADDRESS <- gsub("highway", "hwy", prison_ca$ADDRESS)
+```
+
+Remaining issues: ____ + "7th Floor"
+
+
+```{r}
+prison_sub <- prison_ca[1:10,]
+colnames(prison_sub)[4]<-"FAC_NAME"
+colnames(prison_sub)[5]<-"FAC_STREET"
+colnames(prison_sub)[6]<-"FAC_CITY"
+colnames(prison_sub)[7]<-"FAC_STATE"
+colnames(prison_sub)[8]<-"FAC_ZIP"
+colnames(prison_sub)[14]<-"FAC_COUNTY"
+
+```
+
+```{r}
+echo$FAC_COUNTY<-preprocText(echo$FAC_COUNTY, convert_text=TRUE, tolower=TRUE, remove_whitespace=TRUE, remove_punctuation=TRUE)
+
+echo$FAC_COUNTY <- gsub(" county", "", echo$FAC_COUNTY)
+```
+
+```{r}
+echo$FAC_CITY<-preprocText(echo$FAC_CITY, convert_text=TRUE, tolower=TRUE, remove_whitespace=TRUE, remove_punctuation=TRUE)
+
+echo$FAC_CITY <- gsub(" ca$", "", echo$FAC_CITY)
+echo$FAC_CITY <- gsub("afb", "air force base", echo$FAC_CITY)
+echo$FAC_CITY <- gsub("calif ", "california ", echo$FAC_CITY)
+echo$FAC_CITY <- gsub("spg", "springs", echo$FAC_CITY)
+echo$FAC_CITY <- gsub("vly", "valley", echo$FAC_CITY)
+
+echo$FAC_CITY <- gsub("^s ", "south ", echo$FAC_CITY)
+echo$FAC_CITY <- gsub("^e ", "east ", echo$FAC_CITY)
+echo$FAC_CITY <- gsub("^n ", "north ", echo$FAC_CITY)
+echo$FAC_CITY <- gsub("^w ", "west ", echo$FAC_CITY)
+```
+
+```{r}
+echo$FAC_STREET<-preprocText(echo$FAC_STREET, convert_text=TRUE, tolower=TRUE, remove_whitespace=TRUE, usps_address=TRUE, remove_punctuation=TRUE)
+
+echo$FAC_STREET <- gsub(" s ", " south ", echo$FAC_STREET)
+echo$FAC_STREET <- gsub(" e ", " east ", echo$FAC_STREET)
+echo$FAC_STREET <- gsub(" n ", " north ", echo$FAC_STREET)
+echo$FAC_STREET <- gsub(" w ", " west ", echo$FAC_STREET)
+
+#Remove suites and units from addresses
+echo$FAC_STREET <- gsub(" ste .*", "", echo$FAC_STREET)
+echo$FAC_STREET <- gsub(" stes .*", "", echo$FAC_STREET)
+echo$FAC_STREET <- gsub(" unit .*", "", echo$FAC_STREET)
+echo$FAC_STREET <- gsub(" suite .*", "", echo$FAC_STREET)
+echo$FAC_STREET <- gsub(" apt .*", "", echo$FAC_STREET)
+
+echo$FAC_STREET <- gsub("highway", "hwy", echo$FAC_STREET)
+```
+
+```{r}
+prison_sub <- prison_sub %>% separate(FAC_STREET, into = c("FAC_NUM", "FAC_STREET"), sep = "(?<=[0-9])[[:space:]]")
+echo <- echo %>% separate(FAC_STREET, into = c("FAC_NUM", "FAC_STREET"), sep = "(?<=[0-9])[[:space:]]")
+```
+Issues: 30755c auld rd --> not a master regexer: how to separate by string that immediately follows a set of digits that *may* contain a character
+
+```{r}
+matches <- fastLink(prison_sub, echo, varnames = c("FAC_NAME", "FAC_NUM", "FAC_STREET", "FAC_STATE", "FAC_CITY",  "FAC_ZIP"), stringdist.match = c("FAC_NAME", "FAC_STREET", "FAC_CITY"), partial.match = c("FAC_NAME"), cut.a = 0.95, cut.p = 0.8, jw.weight = 0.25 )
+```
+
+
+
