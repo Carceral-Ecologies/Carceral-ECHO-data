@@ -2,7 +2,7 @@
 
 # README.md
 
-This repository aims to document the Carceral Ecology project, that is being developed by Professor Nicholas Shapiro, UCLA, in and Lindsay Poirier, UCD. 
+This repository aims to document the Carceral Ecology project, that is being developed by Professor Nicholas Shapiro, UCLA, and Professor Lindsay Poirier, UCD. 
 
 Incarcerated people are on the frontlines of environmental injustice. This systematic exposure of, at a minimum, tens of thousands of incarcerated individuals results from mass incarceration’s close ties with declining, but very much ongoing, industrialism. Often built atop the brownfields of former manufacturing facilities or mines or on the cheap land next to operating facilities, prisons serve as a “recession-proof” employer to those laid off in deindustrialization beginning in the 1970s. This project seeks to assess the environmental hazards of mass incarceration on a national scale. 
 
