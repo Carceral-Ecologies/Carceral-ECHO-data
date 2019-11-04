@@ -33,6 +33,7 @@
 3. Criminal Actions - Severe action reserved for facilities intentionally committed
 
 ## Penalty
+* Penalties most often incur a fee as a result of noncompliance with enviromental regulations
 
 ## Compliance, Noncompliance, and Significant Noncompliance
 * Compliance represents if a facility adheres to environmental regulations
@@ -41,5 +42,13 @@
 * The database also features three year compliance history by quarter
 
 ## Inspection
+* ECHO database features number of inspections within 5 years, including the dates of the inspections
+* There are lag times between the date of the inspection and the time the data is posted, sometimes spanning months
+* Inspections, information gathering, and self-reported data spurs warning letters or notice of violation
+* Smaller facilities may receive less frequeny inspections
 
+## Quarter
+* Defines a unit of time of approximately three months to define the quanity of noncompliance or violations within the time period
+* There are four quarters in a year
+* The ECHO Database also allows individuals to explore data in monthly time increments
 
