@@ -22,7 +22,7 @@
 
 ## Violation
 * Refers to the state in which a facility is noted as out of compliance with an environmental statute or regulation
-* ECHO database only tracks four environmental statutes: Clean Air Act (CAA), Clean Water Act (CWA), Resource Conservation and Recovery Act (RCVA), and Safe Drinking Water Act (SDWA)
+* ECHO database only tracks four environmental statutes: Clean Air Act (CAA), Clean Water Act (CWA), Resource Conservation and Recovery Act (RCVA), and Safe Drinking Water Act (SDWA)resul
 * Echo does **NOT** provide data on violations at CWA direct discharge minor facilities, CAA mobile source and asbestos violations, Toxic Substances Control Act and Federal Insecticide, Fungicide and Rodenticide Act violations, Superfund violations, and CWA wetlands and pretreatment violations
 
 ## Enforcement
@@ -31,5 +31,15 @@
 1. Civil Administrative Action - Non-judicial action from the EPA or state taking the form of a Superfund notice letter or an order, with a possibility to incur penalties, directing a facility to adhere to sufficient compliance
 2. Civil Judicial Actions - Formal lawsuits agains institutions that have failed to abide environmental regulations, comply with an order, pay the EPA to clean up, or clean up the environmental issue themselves
 3. Criminal Actions - Severe action reserved for facilities intentionally committed
+
+## Penalty
+
+## Compliance, Noncompliance, and Significant Noncompliance
+* Compliance represents if a facility adheres to environmental regulations
+* Facilities may have the statuses "Noncompliance" and "Significant Noncompliance" (SNC) in regards to compliance with the Clean Water Act and Resource Conservation and Recovery Act programs or "High Priority Violation (HPV)" and "Serious Violator" in regards to compliance with the Safe Drinking Water Act program 
+* A status of "Resolved Pending" under the CWA program is a compliance status designation noting a facility's compliance with an enforcement order, but is not in full compliance with permit conditions
+* The database also features three year compliance history by quarter
+
+## Inspection
 
 
