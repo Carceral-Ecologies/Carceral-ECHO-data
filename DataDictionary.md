@@ -22,7 +22,7 @@
 
 ## Violation
 * Refers to the state in which a facility is noted as out of compliance with an environmental statute or regulation
-* ECHO database only tracks four environmental statutes: Clean Air Act (CAA), Clean Water Act (CWA), Resource Conservation and Recovery Act (RCVA), and Safe Drinking Water Act (SDWA)resul
+* ECHO database only tracks four environmental statutes: Clean Air Act (CAA), Clean Water Act (CWA), Resource Conservation and Recovery Act (RCVA), and Safe Drinking Water Act (SDWA)
 * Echo does **NOT** provide data on violations at CWA direct discharge minor facilities, CAA mobile source and asbestos violations, Toxic Substances Control Act and Federal Insecticide, Fungicide and Rodenticide Act violations, Superfund violations, and CWA wetlands and pretreatment violations
 
 ## Enforcement
@@ -33,10 +33,10 @@
 3. Criminal Actions - Severe action reserved for facilities intentionally committed
 
 ## Penalty
-* Penalties most often incur a fee as a result of noncompliance with enviromental regulations
+* Penalties most often result in a fee as a result of noncompliance with enviromental regulations
 
 ## Compliance, Noncompliance, and Significant Noncompliance
-* Compliance represents if a facility adheres to environmental regulations
+* A facility is said to be in compliance if it adheres to environmental regulations
 * Facilities may have the statuses "Noncompliance" and "Significant Noncompliance" (SNC) in regards to compliance with the Clean Water Act and Resource Conservation and Recovery Act programs or "High Priority Violation (HPV)" and "Serious Violator" in regards to compliance with the Safe Drinking Water Act program 
 * A status of "Resolved Pending" under the CWA program is a compliance status designation noting a facility's compliance with an enforcement order, but is not in full compliance with permit conditions
 * The database also features three year compliance history by quarter
@@ -48,7 +48,7 @@
 * Smaller facilities may receive less frequeny inspections
 
 ## Quarter
-* Defines a unit of time of approximately three months to define the quanity of noncompliance or violations within the time period
+* A quarter is a unit of time that spans three months and is the standard base unit for reporting noncompliance events or violations in ECHO. For the Clean Water Act, the permittee will generally report three times within the quarter.
 * There are four quarters in a year
 * The ECHO Database also allows individuals to explore data in monthly time increments
 
