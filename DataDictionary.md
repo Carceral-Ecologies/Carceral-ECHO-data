@@ -1,6 +1,8 @@
 # Data Dictionary
 *The following information features a dictionary of jargon, specifically relevant to the ECHO database. This serves as a starting point in understanding the terms used in the ECHO dataset.*
 
+There are a number of known data issues within ECHO please click [this](https://echo.epa.gov/resources/echo-data/known-data-problems) link to see those problems itemized by regulation.
+
 ## ECHO
 * Enforcement and Compliance History Online
 * The ECHO database refers to a public, online repository in which the public can search facilities of interest to evaluate compliance with environmental regulations
