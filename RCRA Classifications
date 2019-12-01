@@ -1,0 +1,44 @@
+# What is considered "hazardous waste" and "acute hazardous waste" regarding RCRA?
+There are four general RCRA categorizations of hazardous waste: F, K, P, and U. The following document elucidates these four categorizations along with these classifications’ connection with waste and its consideration as hazardous versus acute hazardous. 
+
+**Waste can be assumed to be acute hazardous waste if it is any P-listed waste or one of the following F-listed wastes: F020, F021, F022, F023, F026, and F027. This website has a helpful diagram about defining hazardous waste in general: https://www.epa.gov/hw/criteria-definition-solid-waste-and-solid-and-hazardous-waste-exclusions. For simplicity, any substance that can be categorized as F, K, P, or U is considered hazardous.**
+
+## F-List
+The F-list encompass hazardous wastes from nonspecific sources, and as such, encompass processes from a wide array of sectors. These are the F-list subgroups:
+* Spent solvent wastes (F001 – F005)
+* Wastes from electroplating and other metal finishing operations (F006 – F012, and F019)
+* Dioxin bearing wastes (F020 – F023 and F026 – F028)
+* Wastes from production of certain chlorinated aliphatic hydrocarbons (F024 and F025)
+* Wastes from wood preserving (F032, F034, and F035)
+* Petroleum refinery wastewater treatment sludges (F037 and F038)
+* Multisource leachate (F039)
+
+## K-list
+The K-list encompass hazardous wastes from specific sources like petroleum refining and pesticide manufacturing wastes. These are the K-list subgroups:
+* Wood preservation (K001)
+* Inorganic pigment manufacturing (K002 – K008)
+* Organic chemicals manufacturing (K009 – K011, K013 – K030, K083, K085, K093 – K096, K103 – K105, K107 – K118, K136, K149 – K151, K156 – K159, K161, K174 – K175, and K181)
+* Inorganic chemicals manufacturing (K071, K073, K106, and K176 – K178)
+* Pesticides manufacturing (K031 – K043, K097 – K099, K123 – K126, and K131 – K132)
+* Explosives manufacturing (K044 – K047)
+* Petroleum refining (K048 – K052, and K169 – K172)
+* Iron and steel production (K061 and K062)
+* Primary aluminum production (K088)
+* Secondary lead processing (K069 and K100)
+* Veterinary pharmaceuticals manufacturing (K084 and K101 – K102)
+* Ink formulation (K086)
+* Coking (K060, K141 – K145, and K147 – K148)
+
+## P-List and U-List
+The P-list and U-list both encompass unused pharmaceuticals, chemicals, and pesticides to be disposed, where the U-list identifies toxic wastes.
+
+**The code for each process or chemical is in the form of X###, where X represents F, K, P, or U, and ### represents a sequence of three numbers. Scrutinize the P list and the specified F listed chemicals if you want to specify a waste as hazardous or acute hazardous. You can explore the hazardous wastes of interest through the website here:
+https://www.epa.gov/hw/defining-hazardous-waste-listed-characteristic-and-mixed-radiological-wastes#PandU**
+
+Sources:
+1. https://waste.zendesk.com/hc/en-us/articles/212352657-What-RCRA-hazardous-wastes-are-classified-as-acute-hazardous-wastes-
+1. https://www.hazardouswasteexperts.com/rcra-listed-wastes-toxic-acutely-toxic-or-merely-hazardous/
+
+
+
+
