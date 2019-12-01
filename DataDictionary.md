@@ -54,3 +54,18 @@ There are a number of known data issues within ECHO please click [this](https://
 * There are four quarters in a year
 * The ECHO Database also allows individuals to explore data in monthly time increments
 
+## Hazardous Waste Generator
+* Under RCRA, persons and facilities that generate waste are considered hazardous waste generators
+* A hazardous waste generator may appear in the ECHO database depending on its categorization as a very small quantity generator, a small quantity generator, and a large quantity generator
+* Please click [here] (https://www.epa.gov/hwgenerators/hazardous-waste-generator-regulatory-summary#table) to see requirements
+
+## Public Water System
+* Under the SDWA, public water systems are defined as a system that provides water for human consumption for at least 15 service connections or regularly serves at least 25 individuals at least 60 days out of the year
+* Public Water systems can further be categorized as:
+1. Community
+- A water system that serves the same population throughout the year
+2. Non-Transient/Non-Community
+-  A public water system that regularly supplies water to at least 25 of the same people at least six months per year, but not year-round
+3. Transient/Non-Community
+- A public water system that provides water in a place such as a gas station or campground where people do not remain for a long period of time
+
