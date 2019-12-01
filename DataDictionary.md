@@ -57,7 +57,7 @@ There are a number of known data issues within ECHO please click [this](https://
 ## Hazardous Waste Generator
 * Under the RCRA, persons and facilities that generate waste are considered hazardous waste generators
 * A hazardous waste generator may appear in the ECHO database depending on its categorization as a very small quantity generator, a small quantity generator, and a large quantity generator
-* Please click [here] (https://www.epa.gov/hwgenerators/hazardous-waste-generator-regulatory-summary#table) to see requirements
+* Please click [here](https://www.epa.gov/hwgenerators/hazardous-waste-generator-regulatory-summary#table) to see requirements
 
 ## Public Water System
 * Under the SDWA, public water systems are defined as a system that provides water for human consumption for at least 15 service connections or regularly serves at least 25 individuals at least 60 days out of the year
