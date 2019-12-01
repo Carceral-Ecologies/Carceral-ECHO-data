@@ -55,7 +55,7 @@ There are a number of known data issues within ECHO please click [this](https://
 * The ECHO Database also allows individuals to explore data in monthly time increments
 
 ## Hazardous Waste Generator
-* Under RCRA, persons and facilities that generate waste are considered hazardous waste generators
+* Under the RCRA, persons and facilities that generate waste are considered hazardous waste generators
 * A hazardous waste generator may appear in the ECHO database depending on its categorization as a very small quantity generator, a small quantity generator, and a large quantity generator
 * Please click [here] (https://www.epa.gov/hwgenerators/hazardous-waste-generator-regulatory-summary#table) to see requirements
 
@@ -68,4 +68,9 @@ There are a number of known data issues within ECHO please click [this](https://
 -  A public water system that regularly supplies water to at least 25 of the same people at least six months per year, but not year-round
 3. Transient/Non-Community
 - A public water system that provides water in a place such as a gas station or campground where people do not remain for a long period of time
+
+## NPDES Permit
+* NPDES stands for National Pollutant Discharge Elimination System
+* Under the CWA, facilities that discharge pollutants to a body of water require an NPDES Permit
+
 
