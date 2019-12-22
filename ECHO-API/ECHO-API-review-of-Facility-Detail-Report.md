@@ -19,7 +19,7 @@ Some API data of potential interest and/or data not included in the ECHO Exporte
 - information on water bodies that receive a facility's released pollutants.
 - [EJSCREEN](https://github.com/Carceral-Ecologies/Carceral-EJSCREEN-data) national percentiles and demographics.
 - time series data, covering a 13 quarter or 3 year period, for example compliance status by quarter (data is easier to interpret than in summary file, and more granular)
-- the ECHO exporter lat/long data was often zipcode centorids rather than the faclity itself. The API data supplies proper facility lat/long data. 
+- the ECHO exporter lat/long data was often zipcode centorids rather than the facility itself. The API data supplies proper facility lat/long data. 
 
 ## Explore API Carceral Data
 Via [this link](https://jsonformatter.org/json-pretty-print?url=https://raw.githubusercontent.com/Carceral-Ecologies/Carceral-ECHO-data/master/ECHO-API/ECHO-API-JSON-composite-results-annotated-w-rough-data-dictionary.txt) you can explore an example API data response (try the 'tree' view in the right-hand panel), collected from carceral facilities. Data definitions are included throughout entered under 'UCD/UCLA', some are speculative, drawn from the [ECHO web report data dictionary](https://echo.epa.gov/help/reports/dfr-data-dictionary) and a [2014 API dictionary](https://echo.epa.gov/system/files/ECHO-DFR_Rest_Services.pdf).
