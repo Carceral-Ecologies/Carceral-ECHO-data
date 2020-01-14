@@ -1,0 +1,4 @@
+# Joining HIFLD Prisons with EPA Facilities
+Over UCD's 2019 winter break, @benmillam worked with @shapironick and it was decided to move forward with a manual coding effort to match [HIFLD](https://hifld-geoplatform.opendata.arcgis.com/datasets/2d6109d4127d458eaf0958e4c5296b67_0) prisons to [EPA FRS facilities](https://www.epa.gov/frs/geospatial-data-download-service) (to be taken on by Nick's lab in January). Ben produced a Google Sheet to assist with manual coding; the Sheet is stored on the UCD team Google Drive. The code in this [Joining](https://github.com/Carceral-Ecologies/Carceral-ECHO-data/tree/master/Joining) directory produced the CSV source for the Sheet, incorporating HIFLD/EPA matches from a spatial join, and then matches from a 'probabilistic record linkage' join on a spatial join subset.
+
+The source HIFLD/EPA data files are archived on the UCD team Google Drive.
