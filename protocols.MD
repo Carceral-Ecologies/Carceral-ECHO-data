@@ -1,0 +1,3 @@
+Below are our protocols used in assembling our data and running our analyses. 
+
+1. Our Manual Coding Guidelines (24 pages) outlines the process for assigning FRS ID numbers (the # that the EPA uses to keep track of regulated faclities) to all prisons, jails, and detention centers in the US, as compiled in the [HIFLD data base](https://hifld-geoplatform.opendata.arcgis.com/datasets/prison-boundaries/data?geometry=97.022%2C-3.069%2C-116.728%2C75.954) maintained by the Department of Homeland Security. [Working document link](https://docs.google.com/document/d/1LcTDziXidFbjKlBaBK1kJASdApoVPzriterqTe16E8s/edit?usp=sharing). 
