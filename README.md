@@ -54,6 +54,8 @@ For any questions on decorum please see our [Code of Conduct](https://github.com
 | [🔢](# "Content") [📆](# "Project Management") [🤔](# "Ideas and Planning") | Ramya Natarajan |
 | [💻](# "Code") [🚇](# "Infrastructure") [🤔](# "Ideas and Planning") | Ben Millam |
 | [🔢](# "Content") [🤔](# "Ideas and Planning") | Derek Sportsman |
+| [🔢](# "Content") | Ivy Molina |
+| [🔢](# "Content") | Savannah Ramirez |
 | [🔢](# "Content") | Prasann Ranade |
 | [🔢](# "Content") | Alice Lu |
 | [🔢](# "Content") | Raymond Ko |
