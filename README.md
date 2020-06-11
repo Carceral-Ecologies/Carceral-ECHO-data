@@ -51,14 +51,12 @@ For any questions on decorum please see our [Code of Conduct](https://github.com
 | [🔢](# "Content") | Kelly Salinas |
 | [🔢](# "Content") [🤔](# "Ideas and Planning") | Nathan Tran |
 | [🔢](# "Content") [📋](# "Organizer") [🤔](# "Ideas and Planning") | Sarah Tan |
-| [🔢](# "Content") [📋](# "Organizer") [🤔](# "Ideas and Planning") | Ramya Natarajan |
-| [🔢](# "Content") [📋](# "Organizer") [🤔](# "Ideas and Planning") | Ben Millam |
+| [🔢](# "Content") [📆](# "Project Management") [🤔](# "Ideas and Planning") | Ramya Natarajan |
+| [💻](# "Code") [🚇](# "Infrastructure") [🤔](# "Ideas and Planning") | Ben Millam |
 | [🔢](# "Content") [🤔](# "Ideas and Planning") | Derek Sportsman |
 | [🔢](# "Content") | Prasann Ranade |
 | [🔢](# "Content") | Alice Lu |
 | [🔢](# "Content") | Raymond Ko |
-
-
 
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
