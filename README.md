@@ -45,9 +45,20 @@ For any questions on decorum please see our [Code of Conduct](https://github.com
 <!-- ALL-CONTRIBUTORS-LIST:START -->
 | Contributions | Name |
 | ----: | :---- |
-| [🔢](# "Content") [📋](# "Organizer") [🤔](# "Ideas and Planning") | Lindsay Poirier |
 | [🔢](# "Content") [📋](# "Organizer") [🤔](# "Ideas and Planning") | Nick Shapiro |
+| [🔢](# "Content") [📋](# "Organizer") [🤔](# "Ideas and Planning") | Lindsay Poirier |
+| [🔢](# "Content") [📋](# "Organizer") [🤔](# "Ideas and Planning") | Melissa Chimwaza |
+| [🔢](# "Content") | Kelly Salinas |
 | [🔢](# "Content") [🤔](# "Ideas and Planning") | Nathan Tran |
+| [🔢](# "Content") [📋](# "Organizer") [🤔](# "Ideas and Planning") | Sarah Tan |
+| [🔢](# "Content") [📋](# "Organizer") [🤔](# "Ideas and Planning") | Ramya Natarajan |
+| [🔢](# "Content") [📋](# "Organizer") [🤔](# "Ideas and Planning") | Ben Millam |
+| [🔢](# "Content") [🤔](# "Ideas and Planning") | Derek Sportsman |
+| [🔢](# "Content") | Prasann Ranade |
+| [🔢](# "Content") | Alice Lu |
+| [🔢](# "Content") | Raymond Ko |
+
+
 
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
