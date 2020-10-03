@@ -1,4 +1,5 @@
 ## trying to alter Lindsay's code for transforming data with multiple FRS IDs in one columns to having one FRS ID per row. 
+## Question for anyone who may be able to asnwer. The file written by this code has duplicated rows in addition to separating the Total_FRS_IDS into separate rows. Why? 
 
 library(tidyverse)
 GG_manual_coding_hifld_prisons_to_FRS <- read.csv("C:\\Users\\User\\Documents\\carceral ecologies\\GG_manual_coding_hifld_prisons_to_FRS.csv", stringsAsFactors = FALSE)
