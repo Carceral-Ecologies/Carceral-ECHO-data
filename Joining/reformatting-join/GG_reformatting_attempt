@@ -1,0 +1,10 @@
+## trying to alter Lindsay's code for transforming data with multiple FRS IDs in one columns to having one FRS ID per row. 
+
+library(tidyverse)
+GG_manual_coding_hifld_prisons_to_FRS <- read.csv("C:\\Users\\User\\Documents\\carceral ecologies\\GG_manual_coding_hifld_prisons_to_FRS.csv", stringsAsFactors = FALSE)
+
+reformatted_GG_manual_coding_hifld_prisons_to_FRS <- 
+  GG_manual_coding_hifld_prisons_to_FRS %>% 
+  separate_rows(Total_FRS_IDS) 
+
+write.csv(reformatted_GG_manual_coding_hifld_prisons_to_FRS, "reformatted_GG_manual_coding_hifld_prisons_to_FRS.csv")
