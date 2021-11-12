@@ -20,6 +20,9 @@ ggfacilities[vapply(ggfacilities, is.character, TRUE)] <- lapply(ggfacilities[va
 
 
 ggfacilities$HIFLD_POPULATION_2020 <- as.numeric(ggfacilities$HIFLD_POPULATION_2020)
+ggfacilities$HIFLD_CAPACITY_2020 <- as.numeric(ggfacilities$HIFLD_CAPACITY_2020)
+ggfacilities$DOJ_YEAR_BUILT_2005 <- as.numeric(ggfacilities$DOJ_YEAR_BUILT_2005)
+
 
 # ggfacilities$num_NAME <- with(ggfacilities, ave(NAME, NAME, FUN=length))
 # ggfacilities$num_FID <- with(ggfacilities, ifelse(is.na(FID), 0, ave(NAME, FID, FUN=length)))
@@ -34,6 +37,7 @@ frs_hifld <- frs_hifld[complete.cases(frs_hifld), ]
 
 # reduce to 1 row / HIFLD_ID
 facilities <- subset(ggfacilities, !is.na(HIFLD_FACILITYID) & !duplicated(HIFLD_FACILITYID), -FRS_ID)
+
 
 
 # Each FRS should roll up to a single HIFLD
@@ -143,7 +147,9 @@ pws_reg$REGISTRY_ID <- NULL
 years <- unique(pws_pop[, "FISCAL_YEAR", drop=FALSE])
 
 
-sdwa_violations_enforcement <- fread(cmd="unzip -p data/SDWA_latest_downloads.zip SDWA_VIOLATIONS_ENFORCEMENT.csv") %>% as.data.frame
+# NB below is a large file, so filter in-transit down to 2010+
+
+sdwa_violations_enforcement <- fread(cmd="unzip -p data/SDWA_latest_downloads.zip SDWA_VIOLATIONS_ENFORCEMENT.csv | grep 'DATE\\|201\\|202\\|^$'") %>% as.data.frame
 
 sdwa_violations_enforcement[grep("DATE", colnames(sdwa_violations_enforcement), value = TRUE)] <- lapply(
   
@@ -168,3 +174,13 @@ sdwa_violations_enforcement <- subset(sdwa_violations_enforcement,
 sdwa_facilities <- fread(cmd="unzip -p data/SDWA_latest_downloads.zip SDWA_FACILITIES.csv")
 
 
+# Demographics of population on water system
+
+demogs <- rbind(
+  fread("drive/ECHO data analysis /!GG!/Spreadsheets/2021-07 Notebook/SDWA_Site_Visits.csv", select=c("REGISTRY_ID", "FAC_PERCENT_MINORITY","FAC_POP_DEN")),
+  fread("drive/ECHO data analysis /!GG!/Spreadsheets/2021-07 Notebook/SDWA_Violations.csv", select=c("REGISTRY_ID", "FAC_PERCENT_MINORITY","FAC_POP_DEN"))
+)
+
+names(demogs)[1] <- "FRS_ID"
+demogs <- subset(demogs, !duplicated(FRS_ID))
+demogs$FRS_ID <- as.numeric(demogs$FRS_ID)
