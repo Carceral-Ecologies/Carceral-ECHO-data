@@ -13,17 +13,27 @@ df <- sqldf("
     left join pws_reg using (FRS_ID)
     left join demogs using (FRS_ID)
   ),
+  
   fac_years as (
     select *
     from facs, years
+  ),
+  
+  visits_distinct as (
+  
+    select PWSID, FISCAL_YEAR 
+    from visits
+    group by 1,2
   )
-            
+  
+  
+
   select 
   
   HIFLD_FACILITYID, 
   EPA_REGION,
   TYPE, 
-  FISCAL_YEAR,
+  fac_years.FISCAL_YEAR as FISCAL_YEAR,
   HIFLD_POPULATION_2020,
   HIFLD_CAPACITY_2020,
   ICE_FACILITY,
@@ -33,6 +43,9 @@ df <- sqldf("
   SECURELVL,
   FAC_PERCENT_MINORITY,
   FAC_POP_DEN,
+  POPULATION_SERVED_COUNT,
+  
+  count(visits_distinct.PWSID) as VISITED,
   
   sum(case when ACUTE_HEALTH_BASED = 'Y' then 1 else 0 end) as ACUTE_V,
   sum(case when HEALTH_BASED = 'Y' and ACUTE_HEALTH_BASED = 'N' then 1 else 0 end) as HEALTH_V,
@@ -41,13 +54,20 @@ df <- sqldf("
   
   from fac_years
   left join violations using (PWSID, FISCAL_YEAR)
-  
+  left join pws_pop using (PWSID, FISCAL_YEAR)
+  left join visits_distinct using (PWSID, FISCAL_YEAR)
+
+  -- Filters out inactive 
+  -- left join inactive_systems_fac_years isfy on fac_years.PWSID = isfy.PWSID and fac_years.FISCAL_YEAR = isfy.FISCAL_YEAR
+  --where isfy.PWSID IS NULL
+  -- result - only dropped one row
+
   group by 
 
   HIFLD_FACILITYID, 
   EPA_REGION,
   TYPE, 
-  FISCAL_YEAR,
+  FISCAL_YEAR, --fac_years.FISCAL_YEAR,
   HIFLD_POPULATION_2020,
   HIFLD_CAPACITY_2020,
   ICE_FACILITY,
@@ -56,7 +76,8 @@ df <- sqldf("
   DOJ_YEAR_BUILT_2005,
   SECURELVL,
   FAC_PERCENT_MINORITY,
-  FAC_POP_DEN
+  FAC_POP_DEN,
+  POPULATION_SERVED_COUNT
             
 ")
 
@@ -80,14 +101,22 @@ df <- transform(df,
                 DOJ_HOUSES_2005_both = grepl("both", DOJ_HOUSES_2005) %in% TRUE,
                 FAC_PERCENT_MINORITY_na = is.na(FAC_PERCENT_MINORITY),
                 FAC_PERCENT_MINORITY_fill = nafill(FAC_PERCENT_MINORITY, fill = mean(FAC_PERCENT_MINORITY, na.rm=TRUE)),
-                size = addNA(system_size(HIFLD_POPULATION_2020)),
+                size = system_size(nafill(POPULATION_SERVED_COUNT, fill=mean(POPULATION_SERVED_COUNT, na.rm=TRUE))),
                 percent_over_capacity = pmax(HIFLD_POPULATION_2020 / HIFLD_CAPACITY_2020 - 1, 0, na.rm = TRUE),
                 age = FISCAL_YEAR - nafill(DOJ_YEAR_BUILT_2005, fill=mean(DOJ_YEAR_BUILT_2005, na.rm=TRUE)),
                 FISCAL_YEAR=as.factor(FISCAL_YEAR)
 )
 
-df[is.na(df$SECURELVL), "SECURELVL"] <- "NOT AVAILABLE"
-df$SECURELVL <- relevel(as.factor(df$SECURELVL), "NOT AVAILABLE")
+df$SECURELVL <- factor(df$SECURELVL, c("MAXIMUM", "JUVENILE", "MINIMUM", "MEDIUM", "CLOSE", NA), exclude = NULL) 
+
+df$TYPE <- relevel(df$TYPE, "STATE")
+
+df$DOJ_HOUSES_2005_gender <- c(NA, "male"="male", "both"="both", "female"="female", "male; male"="male", "female; male"="both", 
+                               "male; both"="both")[df$DOJ_HOUSES_2005] |> factor( c("male", "female", "both")) |>  addNA()
+
+df$size <- relevel(df$size, "Small")
+
+df$VISITED <- pmin(df$VISITED, 1)
 
 ###
 
@@ -98,65 +127,73 @@ base <- ~ ICE_FACILITY +
   PRIVATE_FACILITY +
   TYPE  +
   SECURELVL +
-  DOJ_HOUSES_2005_male  + DOJ_HOUSES_2005_female + DOJ_HOUSES_2005_both +
+  DOJ_HOUSES_2005_gender +
   FAC_PERCENT_MINORITY_na + FAC_PERCENT_MINORITY_fill + 
-  age + size + percent_over_capacity +
+  age + 
+  #size + 
+  percent_over_capacity + VISITED +
   (1 | FISCAL_YEAR) + (1 | EPA_Region)
 
 f_perf <- !i ~ .
-f_acute <- ACUTE_V ~ .
-f_health <- HEALTH_V ~ . 
+#f_acute <- ACUTE_V ~ .
+#f_health <- HEALTH_V ~ . 
 f_monitoring <- MONITORING_V ~ . 
 f_notif <- NOTIF_V ~ .
 
+f_hhact <- I(ACUTE_V + HEALTH_V) ~ .
+
+m <- new.env()
 
 library(future)
 plan(multicore, workers=8)
 
-cont <- glmerControl(optCtrl = list(maxfun=100))
+cont <- glmerControl(optCtrl = list(maxfun=80))
 Sys.time()
-m_perfect %<-% glmer(update(base, f_perf), df, family=binomial(), weights=ifelse(i, Zhat, 1), control = cont)  
+m$perfect %<-% glmer(update(base, f_perf), df, family=binomial(), weights=ifelse(i, Zhat, 1), control = cont)  
 Sys.time()
-m_y1 %<-% glmer(update(base, f_acute), df, family=poisson(), weights=ifelse(i, 1-Zhat, 1), control = cont)
-m_y2 %<-% glmer(update(base, f_health), df, family=poisson(), weights=ifelse(i, 1-Zhat, 1), control = cont)
-m_y3 %<-% glmer(update(base, f_monitoring), df, family=poisson(), weights=ifelse(i, 1-Zhat, 1), control = cont)
-m_y4 %<-% glmer(update(base, f_notif), df, family=poisson(), weights=ifelse(i, 1-Zhat, 1), control = cont)
+#m$y1 %<-% glmer(update(base, f_acute), df, family=poisson(), weights=ifelse(i, 1-Zhat, 1), control = cont)
+#m$y2 %<-% glmer(update(base, f_health), df, family=poisson(), weights=ifelse(i, 1-Zhat, 1), control = cont)
+m$hhact %<-% glmer(update(base, f_hhact), df, family=poisson(), weights=ifelse(i, 1-Zhat, 1), control = cont)
+m$monit %<-% glmer(update(base, f_monitoring), df, family=poisson(), weights=ifelse(i, 1-Zhat, 1), control = cont)
+m$notif %<-% glmer(update(base, f_notif), df, family=poisson(), weights=ifelse(i, 1-Zhat, 1), control = cont)
 
-m_perfect_0 %<-% m_perfect
-m_y1_0 %<-% m_y1
-m_y2_0 %<-% m_y2
-m_y3_0 %<-% m_y3
-m_y4_0 %<-% m_y4
+m0 <- as.list(m)
 
-pler <- function(m) predict(m, type='response', newdata=df, allow.new.levels=TRUE)
 
-for(j in 1:100) {
+for(j in 1:50) {
 
   message("**************************************")
   message("* Iteration ", j, " at ", as.character(Sys.time()) )
+
+  if(j %in% c(10, 25, 45)){
+    cont$optCtrl$maxfun <- cont$optCtrl$maxfun * 2
+  }
   
+  
+    
   # E step
 
   Zold <- df$Zhat
     
-  df$Zhat[df$i] <- (
-    1 /  (1 + pler(m_perfect) * dpois(0, lambda = pler(m_y1)) * dpois(0, lambda=pler(m_y2)) * dpois(0, lambda=pler(m_y3)) * dpois(0, lambda=pler(m_y4)))
-  )[df$i]
+  preds <-  eapply(m, predict, type='response', newdata=df, allow.new.levels=TRUE)
+  preds[names(preds) != 'perfect'] <- lapply(preds[names(preds) != 'perfect'], dpois, x=0)
+  preds <- Reduce(`*`, preds)
+
+  df$Zhat[df$i] <- (1 /  (1 + preds) )[df$i]
   
   dZ = sum(abs(Zold - df$Zhat))
   message("* dZ = ", dZ)
   message("**************************************")
   
+  m$perfect %<-% update(m$perfect, start = getME(m$perfect, c("theta","fixef")), data=df, weights = ifelse(i, Zhat, 1), control=cont)
+  
   # M step
+  for(j in setdiff(ls(m), "perfect"))
+    m[[j]] %<-% update(m[[j]], start = getME(m[[j]], c("theta","fixef")), data = df, weights = ifelse(i, 1-Zhat, 1), control=cont)
   
-  m_y1 %<-% update(m_y1, start = getME(m_y1, c("theta","fixef")), data = df, weights = ifelse(i, 1-Zhat, 1))
-  m_y2 %<-% update(m_y2, start = getME(m_y2, c("theta","fixef")), data = df, weights = ifelse(i, 1-Zhat, 1))
-  m_y3 %<-% update(m_y3, start = getME(m_y3, c("theta","fixef")), data = df, weights = ifelse(i, 1-Zhat, 1))
-  m_y4 %<-% update(m_y4, start = getME(m_y4, c("theta","fixef")), data = df, weights = ifelse(i, 1-Zhat, 1))
-  
-  m_perfect %<-% update(m_perfect, start = getME(m_perfect, c("theta","fixef")), weights = ifelse(i, Zhat, 1))
   #summary(m_perfect)
-  
+
+    
 }
 
 
