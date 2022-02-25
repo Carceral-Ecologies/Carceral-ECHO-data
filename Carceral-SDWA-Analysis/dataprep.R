@@ -21,6 +21,10 @@ ggfacilities[vapply(ggfacilities, is.character, TRUE)] <- lapply(ggfacilities[va
 
 ggfacilities$HIFLD_POPULATION_2020 <- as.numeric(ggfacilities$HIFLD_POPULATION_2020)
 ggfacilities$HIFLD_CAPACITY_2020 <- as.numeric(ggfacilities$HIFLD_CAPACITY_2020)
+
+# 2/25 -999 in capacity?
+ggfacilities$HIFLD_CAPACITY_2020 <- ifelse(ggfacilities$HIFLD_CAPACITY_2020 == -999, NA, ggfacilities$HIFLD_CAPACITY_2020)
+
 ggfacilities$DOJ_YEAR_BUILT_2005 <- as.numeric(ggfacilities$DOJ_YEAR_BUILT_2005)
 
 

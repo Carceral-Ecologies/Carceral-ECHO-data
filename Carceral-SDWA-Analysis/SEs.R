@@ -16,8 +16,6 @@ pack <- function(models) {
 
 
 
-pars <- pack(m0[c("perfect", "hhact", "monit", "notif")])
-
 
 
 ### TODO
@@ -90,7 +88,11 @@ loglik.vzi <- function(beta, ...) {
   
 }
 
-nb <- length(getME(m0$perfect, "beta"))
+
+pars <- pack(as.list(m)[c("perfect", "hhact", "monit", "notif")])
+
+
+nb <- length(getME(m$perfect, "beta"))
 beta <- pars[1:nb, ]
 
 
@@ -99,7 +101,7 @@ beta <- pars[1:nb, ]
 # })
 
 system.time({
-  fit <- optim(beta, loglik.vzi, hessian = TRUE, method="BFGS", control=list(maxit=5000, fnscale=-1), pars=pars)
+  fit <- optim(beta, loglik.vzi, hessian = TRUE, method="Nelder-Mead", control=list(maxit=5000, fnscale=-1), pars=pars)
 })
 
 
@@ -114,8 +116,8 @@ system.time({
 rownames(fit$par) <- names(fixef(m0$perfect))
 colnames(fit$par) <- c("perft", "health", "montr", "notif")
 
-se <- with(Hp, sapply(seq(length(beta)), function(i, r = u[i,] * v[i,] / (-2*d) , m=80) sum(r[1:m])))
-table(sign(se))
+se <- with(Hp, sapply(seq(length(beta)), function(i, r = u[i,] * v[i,] / (-2*d) , m=ncol(u)) sum(r[1:m])))
+table(se > -.Machine$double.eps)
 dim(se) <- dim(fit$par)
 dimnames(se) <- dimnames(fit$par)
 round(se,5)

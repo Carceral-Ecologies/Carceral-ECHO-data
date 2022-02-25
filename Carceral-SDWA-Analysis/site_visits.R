@@ -16,10 +16,16 @@ summary(m_visit.restart)
 
 f_visit_16 <- update(base, VISITED~(.-VISITED-FAC_PERCENT_MINORITY_na)*TIME_gt2016)
 
-m_visit <- glmer(f_visit, df, family=binomial())
-pars_visit <- getME(m_visit, c("theta","fixef"))
-m_visit.restart <- update(m_visit, start=pars_visit)
-summary(m_visit.restart)
+m_visit_16 <- glmer(f_visit_16, df, family=binomial())
+pars_visit <- getME(m_visit_16, c("theta","fixef"))
+m_visit_16.restart <- update(m_visit_16, start=pars_visit)
+summary(m_visit_16.restart)
+
+bbbb <- coef(summary(m_visit_16.restart))[,"Estimate", drop=FALSE]
+dim(bbbb) <- c(length(bbbb) / 2, 2)
+rownames(bbbb) <- rownames(coef(summary(m_visit_16.restart)))[1:nrow(bbbb)]
+colnames(bbbb) <- c("2011-16", "delta")
+
 
 
 # NB a few very large residuals

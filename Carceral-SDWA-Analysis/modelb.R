@@ -1,4 +1,5 @@
 source("dataprep.R")
+source("ejscreen.R")
 library(lme4)
 
 # Which prisons have more violations?
@@ -15,7 +16,8 @@ df <- sqldf("
   ),
   
   fac_years as (
-    select *
+    select *,
+    floor(CENSUS_BLOCK / 1000) as FIPS
     from facs, years
   ),
   
@@ -41,9 +43,12 @@ df <- sqldf("
   DOJ_HOUSES_2005,
   DOJ_YEAR_BUILT_2005,
   SECURELVL,
-  FAC_PERCENT_MINORITY,
-  FAC_POP_DEN,
-  POPULATION_SERVED_COUNT,
+  MINORPCT * 100 as MINORPCT,
+
+  max(FAC_PERCENT_MINORITY) as FAC_PERCENT_MINORITY,
+  max(FAC_POP_DEN) as FAC_POP_DEN,
+
+  max(POPULATION_SERVED_COUNT) as POPULATION_SERVED_COUNT,
   
   count(visits_distinct.PWSID) as VISITED,
   
@@ -56,6 +61,8 @@ df <- sqldf("
   left join violations using (PWSID, FISCAL_YEAR)
   left join pws_pop using (PWSID, FISCAL_YEAR)
   left join visits_distinct using (PWSID, FISCAL_YEAR)
+  left join ejscreen using(FIPS, FISCAL_YEAR)
+
 
   -- Filters out inactive 
   -- left join inactive_systems_fac_years isfy on fac_years.PWSID = isfy.PWSID and fac_years.FISCAL_YEAR = isfy.FISCAL_YEAR
@@ -75,11 +82,11 @@ df <- sqldf("
   DOJ_HOUSES_2005,
   DOJ_YEAR_BUILT_2005,
   SECURELVL,
-  FAC_PERCENT_MINORITY,
-  FAC_POP_DEN,
-  POPULATION_SERVED_COUNT
+  MINORPCT
             
 ")
+
+sqldf("with d as (select HIFLD_FACILITYID, fiscal_year, count(1) as n from df group by 1, 2) select n, count(1) from d group by 1")
 
 # use data-prep
 # df query from modela
@@ -104,7 +111,14 @@ df <- transform(df,
                 size = system_size(nafill(POPULATION_SERVED_COUNT, fill=mean(POPULATION_SERVED_COUNT, na.rm=TRUE))),
                 percent_over_capacity = pmax(HIFLD_POPULATION_2020 / HIFLD_CAPACITY_2020 - 1, 0, na.rm = TRUE),
                 age = FISCAL_YEAR - nafill(DOJ_YEAR_BUILT_2005, fill=mean(DOJ_YEAR_BUILT_2005, na.rm=TRUE)),
-                FISCAL_YEAR=as.factor(FISCAL_YEAR)
+                FISCAL_YEAR=as.factor(FISCAL_YEAR),
+                HIFLD_CAPACITY_2020_na = is.na(HIFLD_CAPACITY_2020),
+                HIFLD_CAPACITY_2020_fill = nafill(HIFLD_CAPACITY_2020, fill = mean(HIFLD_CAPACITY_2020, na.rm=TRUE)),
+
+                MINORPCT_na = is.na(MINORPCT),
+                MINORPCT_fill = nafill(MINORPCT, fill = mean(MINORPCT, na.rm=TRUE))
+                  
+                
 )
 
 df$SECURELVL <- factor(df$SECURELVL, c("MAXIMUM", "JUVENILE", "MINIMUM", "MEDIUM", "CLOSE", NA), exclude = NULL) 
@@ -118,8 +132,11 @@ df$size <- relevel(df$size, "Small")
 
 df$VISITED <- pmin(df$VISITED, 1)
 
-###
+### SCALING
+df$HIFLD_CAPACITY_2020_fill <- df$HIFLD_CAPACITY_2020_fill / 1000
+df$MINORPCT_fill <- df$MINORPCT_fill / 100
 
+###
 
 
 
@@ -127,11 +144,12 @@ base <- ~ ICE_FACILITY +
   PRIVATE_FACILITY +
   TYPE  +
   SECURELVL +
-  DOJ_HOUSES_2005_gender +
-  FAC_PERCENT_MINORITY_na + FAC_PERCENT_MINORITY_fill + 
-  age + 
+  #DOJ_HOUSES_2005_gender +
+  MINORPCT_na + MINORPCT_fill + 
+  #age + 
   #size + 
-  percent_over_capacity + VISITED +
+  HIFLD_CAPACITY_2020_fill + 
+  VISITED +
   (1 | FISCAL_YEAR) + (1 | EPA_Region)
 
 f_perf <- !i ~ .
@@ -160,7 +178,7 @@ m$notif %<-% glmer(update(base, f_notif), df, family=poisson(), weights=ifelse(i
 m0 <- as.list(m)
 
 
-for(j in 1:50) {
+for(j in 1:6) {
 
   message("**************************************")
   message("* Iteration ", j, " at ", as.character(Sys.time()) )
