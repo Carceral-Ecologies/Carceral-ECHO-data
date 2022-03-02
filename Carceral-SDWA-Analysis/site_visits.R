@@ -1,4 +1,5 @@
-# source("dataprep.R")
+source("dataprep.R")
+source("ejscreen.R")
 library(lme4)
 
 df$TIME <- as.character(df$FISCAL_YEAR)|>as.integer() - 2010
@@ -7,14 +8,14 @@ df$TIME_gt2016 <- as.character(df$FISCAL_YEAR)|>as.integer() > 2016
 
 f_visit <- update(base, VISITED~.-VISITED-FAC_PERCENT_MINORITY_na+TIME)
 
-m_visit <- glmer(f_visit, df, family=binomial())
+m_visit <- glmer(f_visit, df, family=binomial(), subset = HIFLD_FACILITYID != 10003293)
 pars_visit <- getME(m_visit, c("theta","fixef"))
 m_visit.restart <- update(m_visit, start=pars_visit)
 summary(m_visit.restart)
 
 
 
-f_visit_16 <- update(base, VISITED~(.-VISITED-FAC_PERCENT_MINORITY_na)*TIME_gt2016)
+f_visit_16 <- update(base, VISITED~(.-VISITED-FAC_PERCENT_MINORITY_na) + TIME*TIME_gt2016)
 
 m_visit_16 <- glmer(f_visit_16, df, family=binomial())
 pars_visit <- getME(m_visit_16, c("theta","fixef"))

@@ -45,9 +45,9 @@ ejscreen <- do.call(rbind, lapply(ejscreen, select, FIPS=ID, FISCAL_YEAR, ACSTOT
 # 
 # 
 # 
-# facilities %>% merge(frs_hifld) %>% merge(demogs) %>% 
-#   subset(grepl("FOLSOM", NAME), c(NAME, FRS_ID, FAC_PERCENT_MINORITY, FAC_POP_DEN, HIFLD_CAPACITY_2020, HIFLD_CAPACITY_2017, FRS_AT_LEAST_CAP_2020, FRS_AT_LEAST_CAP_2017, CENSUS_BLOCK)) %>% 
-#   print(digits=20)
+facilities %>% merge(frs_hifld) %>% merge(demogs) %>%
+  subset(grepl("FOLSOM", NAME), c(NAME, FRS_ID,HIFLD_FACILITYID, FAC_PERCENT_MINORITY, FAC_POP_DEN, HIFLD_CAPACITY_2020, HIFLD_CAPACITY_2017, FRS_AT_LEAST_CAP_2020, FRS_AT_LEAST_CAP_2017, CENSUS_BLOCK)) %>%
+  print(digits=20)
 # 
 # 
 # facilities %>% merge(frs_hifld) %>% merge(demogs) %>% 
