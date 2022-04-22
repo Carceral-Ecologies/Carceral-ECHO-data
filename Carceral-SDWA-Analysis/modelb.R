@@ -14,12 +14,36 @@ df <- sqldf("
     left join pws_reg using (FRS_ID)
     left join demogs using (FRS_ID)
   ),
-  
+
   fac_years as (
     select *,
     floor(CENSUS_BLOCK / 1000) as FIPS
     from facs, years
   ),
+
+  
+---  fac_years_all as (
+---    select *,
+---    floor(CENSUS_BLOCK / 1000) as FIPS
+---    from facs, years
+---  ),
+  
+---  fac_dad as (
+---  
+---    select PWSID,  
+---           max(case FACILITY_ACTIVITY_CODE 
+---               when 'A' then 9999 
+---               when 'I' then cast(SUBSTR(FACILITY_DEACTIVATION_DATE,7, 4) as int) end) as DAD 
+---    from sdwa_facilities group by 1
+---  ),
+  
+---  --filter to actives
+---  fac_years as (
+---    select *
+---    from fac_years_all
+---    left join fac_dad using (PWSID)
+---    where DAD is NULL or FISCAL_YEAR <= DAD
+---  ),
   
   visits_distinct as (
   
@@ -121,7 +145,7 @@ df <- transform(df,
                 
 )
 
-df$SECURELVL <- factor(df$SECURELVL, c("MAXIMUM", "JUVENILE", "MINIMUM", "MEDIUM", "CLOSE", NA), exclude = NULL) 
+df$SECURELVL <- factor(df$SECURELVL, c("MINIMUM", "MAXIMUM", "JUVENILE",  "MEDIUM", "CLOSE", NA), exclude = NULL) 
 
 df$TYPE <- relevel(df$TYPE, "STATE")
 
@@ -163,9 +187,11 @@ f_hhact <- I(ACUTE_V + HEALTH_V) ~ .
 m <- new.env()
 
 library(future)
-plan(multicore, workers=8)
+#plan(list(tweak(multicore, workers=6), tweak(multicore, workers=6))) # NB only need 4 now, but incrementing for nested parallel for bootstrapping
 
-cont <- glmerControl(optCtrl = list(maxfun=80))
+plan(multicore, workers=6)
+
+cont <- glmerControl(optCtrl = list(maxfun=200))
 Sys.time()
 m$perfect %<-% glmer(update(base, f_perf), df, family=binomial(), weights=ifelse(i, Zhat, 1), control = cont)  
 Sys.time()
@@ -194,6 +220,7 @@ for(j in 1:6) {
   Zold <- df$Zhat
     
   preds <-  eapply(m, predict, type='response', newdata=df, allow.new.levels=TRUE)
+  preds[["perfect"]] <- preds[["perfect"]] / (1 - preds[["perfect"]]) # prob to odds
   preds[names(preds) != 'perfect'] <- lapply(preds[names(preds) != 'perfect'], dpois, x=0)
   preds <- Reduce(`*`, preds)
 
@@ -211,7 +238,14 @@ for(j in 1:6) {
   
   #summary(m_perfect)
 
-    
+  resolve(m)  
 }
 
+
+m <- as.list(m)
+
+message("**************************************")
+message("* Main fit done at  ", as.character(Sys.time()) )
+
+rm(list=setdiff(ls(), c("df", "m", "cont")))
 
