@@ -1,0 +1,696 @@
+---
+title: "R Notebook"
+output:
+  pdf_document: default
+  html_notebook: default
+---
+  
+  
+```{r, echo=FALSE, message=FALSE, results=FALSE}
+library(sqldf)
+library(dplyr)
+library(knitr)
+sqldf <- function(...) knitr::kable(sqldf::sqldf(...))
+#source("../dataprep.R")
+#source("../ejscreen.R")
+load("/tmp/scratch")
+```  
+  
+# Descriptives to re-run with final data
+
+## Number of carceral facilities with unique HIFLD IDs 
+
+```{r}
+sqldf("select count(distinct HIFLD_FACILITYID) from facilities")
+```
+
+
+
+## Number of facilities with unique HIFLD IDs that have corresponding FRS IDs; number of unique FRS IDs  
+
+```{r}
+sqldf("
+select count(distinct HIFLD_FACILITYID), count(distinct FRS_ID)
+from facilities
+join frs_hifld using(HIFLD_FACILITYID)       
+")
+```
+
+
+
+
+## Number of facilities with capacity >25 without FRS IDs; number of facilities with capacity >25 with FRS IDs
+
+```{r}
+sqldf("
+select frs_hifld.FRS_ID IS NOT NULL as has_FRS,
+       count(distinct facilities.HIFLD_FACILITYID),
+        count(distinct frs_hifld.FRS_ID)
+from facilities
+left join frs_hifld on (facilities.HIFLD_FACILITYID = frs_hifld.HIFLD_FACILITYID)
+where HIFLD_CAPACITY_2020 >= 25
+")
+```
+
+
+
+## Number of facilities with FRS IDs that have an SDWIS flag, and the corresponding number of unique HIFLD IDs for those facilities 
+
+```{r}
+sqldf("
+  with facs as (
+    select *
+    
+    from facilities
+    join frs_hifld using (HIFLD_FACILITYID)
+    left join pws_reg using (FRS_ID)
+  )
+  select PWSID IS NOT NULL as has_pws, count(distinct HIFLD_FACILITYID), count(distinct FRS_ID), count(1)
+  from facs
+  group by 1
+  
+  ")
+```
+
+## Number of facilities in the Prisons Boundaries dataset (Nick’s dataset) that were missing information about security level or facility type or both. 
+
+```{r}
+sqldf("
+select SECURELVL IS NOT NULL as has_securelvl, TYPE IS NOT NULL as has_type,
+       count(distinct facilities.HIFLD_FACILITYID)
+from facilities
+group by 1,2
+")
+```
+
+
+
+## Total number of SDWA violations across all facilities in our sample 
+
+```{r}
+sqldf("
+  with facs as (
+    select *
+    
+    from facilities
+    join frs_hifld using (HIFLD_FACILITYID)
+    left join pws_reg using (FRS_ID)
+  )
+  select count(distinct VIOLATION_ID)
+  from facs
+  join violations using(PWSID)
+")
+```
+
+
+
+## number of those violations categorized by type
+The number of those violations categorized as monitoring and reporting violations 
+The number of those violations categorized as health-based violations (including acute health-based) 
+The number of those violations categorized as public notifications violations. 
+
+```{r}
+sqldf("
+  with facs as (
+    select *
+    
+    from facilities
+    join frs_hifld using (HIFLD_FACILITYID)
+    left join pws_reg using (FRS_ID)
+  )
+  select ACUTE_HEALTH_BASED = 'Y' or HEALTH_BASED = 'Y' as health,
+  MONITORING_REPORTING = 'Y' as monitoring,
+  PUBLIC_NOTIF_OTHER = 'Y' as notif,
+    count(distinct VIOLATION_ID), count(distinct HIFLD_FACILITYID)
+  from facs
+  join violations using(PWSID)
+  group by 1,2,3
+")
+```
+
+
+
+
+
+## The state with the most M&R violations; the number of M&R violations in that state 
+
+```{r}
+sqldf("
+  with facs as (
+    select *
+    
+    from facilities
+    join frs_hifld using (HIFLD_FACILITYID)
+    left join pws_reg using (FRS_ID)
+  )
+  select state, count(distinct VIOLATION_ID), count(distinct HIFLD_FACILITYID)
+  from facs
+  left join violations on(facs.PWSID = violations.PWSID)
+  where   MONITORING_REPORTING = 'Y' or MONITORING_REPORTING IS NULL
+  group by 1
+  order by 2
+")
+```
+
+
+
+
+
+## The state with the most health-based violations; the number of health violations in that state 
+
+```{r}
+sqldf("
+  with facs as (
+    select *
+    
+    from facilities
+    join frs_hifld using (HIFLD_FACILITYID)
+    left join pws_reg using (FRS_ID)
+  )
+  select state, count(distinct VIOLATION_ID), count(distinct HIFLD_FACILITYID)
+  from facs
+  left join violations using(PWSID)
+  where   ACUTE_HEALTH_BASED is NULL or ACUTE_HEALTH_BASED = 'Y' or HEALTH_BASED = 'Y'
+  group by 1
+  order by 2
+")
+```
+
+
+
+
+
+
+## The five states with the most violations and the number of those violations; the states with no recorded violations 
+
+```{r}
+sqldf("
+  with facs as (
+    select *
+    
+    from facilities
+    join frs_hifld using (HIFLD_FACILITYID)
+    left join pws_reg using (FRS_ID)
+  )
+  select state, count(distinct VIOLATION_ID), count(distinct HIFLD_FACILITYID)
+  from facs
+  left join violations using(PWSID)
+  group by 1
+  order by 2
+")
+```
+
+
+
+
+## Total number of enforcement actions for carceral facilities 
+
+```{r}
+sqldf("
+  with facs as (
+    select *
+    
+    from facilities
+    join frs_hifld using (HIFLD_FACILITYID)
+    left join pws_reg using (FRS_ID)
+  )
+  select count(distinct ENFORCEMENT_ID), count(distinct HIFLD_FACILITYID)
+  from facs
+  join enforcements using(PWSID)
+")
+```
+
+
+## Number administered by the state; number administered by the EPA 
+
+```{r}
+sqldf("
+  with facs as (
+    select *
+    
+    from facilities
+    join frs_hifld using (HIFLD_FACILITYID)
+    left join pws_reg using (FRS_ID)
+  )
+  select agency, count(distinct ENFORCEMENT_ID), count(distinct HIFLD_FACILITYID)
+  from facs
+  join enforcements using(PWSID)
+  group by 1
+  order by 2
+")
+```
+
+
+## Total number of formal and number of informal enforcement actions 
+
+```{r}
+sqldf("
+  with facs as (
+    select *
+    
+    from facilities
+    join frs_hifld using (HIFLD_FACILITYID)
+    left join pws_reg using (FRS_ID)
+  )
+  select ENFORCEMENT_CATEGORY, count(distinct ENFORCEMENT_ID), count(distinct HIFLD_FACILITYID)
+  from facs
+  join enforcements using(PWSID)
+  group by 1
+  order by 2
+")
+```
+
+
+## Number of enforcement actions public notifications requested / recvd 
+
+```{r}
+sqldf("
+  with facs as (
+    select *
+    
+    from facilities
+    join frs_hifld using (HIFLD_FACILITYID)
+    left join pws_reg using (FRS_ID)
+  )
+  select DESCRIPTION, count(distinct ENFORCEMENT_ID), count(distinct HIFLD_FACILITYID)
+  from facs
+  join enforcements using(PWSID)
+  where lower(DESCRIPTION) LIKE '%notif%'
+  group by 1
+  order by 2
+")
+```
+
+
+
+## Number of penalties issued 
+
+```{r}
+sqldf("
+  with facs as (
+    select *
+    
+    from facilities
+    join frs_hifld using (HIFLD_FACILITYID)
+    left join pws_reg using (FRS_ID)
+  )
+  select ENFORCEMENT_ACTION_TYPE_CODE, count(distinct ENFORCEMENT_ID), count(distinct HIFLD_FACILITYID)
+  from facs
+  join sdwa_violations_enforcement using(PWSID)
+  where ENFORCEMENT_ACTION_TYPE_CODE = 'SFO'
+  group by 1
+  order by 2
+")
+```
+
+
+## Total number of site visits over the 10 years 
+
+```{r}
+sqldf("
+  with facs as (
+    select distinct PWSID
+    
+    from facilities
+    join frs_hifld using (HIFLD_FACILITYID)
+    left join pws_reg using (FRS_ID)
+  )
+  select 1 as all_visits, count(), count(distinct PWSID)
+  from facs
+  join visits using(PWSID)
+  group by 1
+  order by 2
+")
+```
+## Highest number of site visits in a single fiscal year; lowest number of site visits in a single fiscal year. 
+
+```{r}
+sqldf("
+  with facs as (
+    select distinct PWSID
+    
+    from facilities
+    join frs_hifld using (HIFLD_FACILITYID)
+    left join pws_reg using (FRS_ID)
+  )
+  select FISCAL_YEAR, count(), count(distinct PWSID)
+  from facs
+  join visits using(PWSID)
+  group by 1
+  order by 1
+")
+```
+
+## Absolute numbers and % distribution of different values for ENF_ACTION_CATEGORY for each of the 10 years for carceral facilities 
+
+```{r}
+sqldf("
+  with facs as (
+    select *
+    
+    from facilities
+    join frs_hifld using (HIFLD_FACILITYID)
+    left join pws_reg using (FRS_ID)
+  ),
+  freq as (
+    select FISCAL_YEAR, ENF_ACTION_CATEGORY, count(1) as n
+    from facs
+    join sdwa_violations_enforcement using (PWSID)
+    join violations using(VIOLATION_ID)
+    group by 1,2
+    order by 1,2
+  )
+  select freq.*, round(n * 1.0 / SUM(n) OVER (PARTITION BY FISCAL_YEAR), 4) as perc
+  from freq
+")
+```
+
+## Absolute numbers and % distribution of different values for ENFORCEMENT_ACTION_TYPE_CODE for each of the 10 years for carceral facilities 
+
+```{r}
+sqldf("
+  with facs as (
+    select *
+    
+    from facilities
+    join frs_hifld using (HIFLD_FACILITYID)
+    left join pws_reg using (FRS_ID)
+  ),
+  freq as (
+    select FISCAL_YEAR, ENFORCEMENT_ACTION_TYPE_CODE, count(1) as n
+    from facs
+    join sdwa_violations_enforcement using (PWSID)
+    join violations using(VIOLATION_ID)
+    group by 1,2
+    order by 1,2
+  )
+  select freq.*, round(n * 1.0 / SUM(n) OVER (PARTITION BY FISCAL_YEAR), 4) as perc
+  from freq
+")
+```
+
+## Absolute numbers and % distribution of different values for VIOLATION_STATUS for each of the ten years for carceral facilities 
+
+```{r}
+sqldf("
+  with facs as (
+    select *
+    
+    from facilities
+    join frs_hifld using (HIFLD_FACILITYID)
+    left join pws_reg using (FRS_ID)
+  ),
+  freq as (
+    select FISCAL_YEAR, VIOLATION_STATUS, count(1) as n
+    from facs
+    join sdwa_violations_enforcement using (PWSID)
+    join violations using(VIOLATION_ID)
+    group by 1,2
+    order by 1,2
+  )
+  select freq.*, round(n * 1.0 / SUM(n) OVER (PARTITION BY FISCAL_YEAR), 4) as perc
+  from freq
+")
+```
+
+
+
+## Total number of IS_MAJOR_VIOL_IND values Y
+
+
+```{r}
+sqldf("
+  with facs as (
+    select *
+    
+    from facilities
+    join frs_hifld using (HIFLD_FACILITYID)
+    left join pws_reg using (FRS_ID)
+  ),
+  freq as (
+    select FISCAL_YEAR, IS_MAJOR_VIOL_IND, count(1) as n
+    from facs
+    join sdwa_violations_enforcement using (PWSID)
+    join violations using(VIOLATION_ID)
+    group by 1,2
+    order by 1,2
+  )
+  select freq.*, round(n * 1.0 / SUM(n) OVER (PARTITION BY FISCAL_YEAR), 4) as perc
+  from freq
+")
+```
+
+
+## Absolute numbers and % distribution of different values for VISIT_REASON_CODE and AGENCY_TYPE_CODE for each of the ten years for carceral facilities 
+
+*NB: these columns are only from the other version of visits (SDWA_latest_downloads.zip), they are not present in the one used in previous analysis (SDWA_downloads.zip), and may have different # of rows, coverage, etc. They are groped by visit year, which may be different from fiscal year. etc*
+
+
+
+```{r}
+#visits2 <- fread(cmd="unzip -p ../data/SDWA_latest_downloads.zip SDWA_SITE_VISITS.csv")
+sqldf("
+  with facs as (
+    select distinct pwsid
+    from facilities
+    join frs_hifld using (HIFLD_FACILITYID)
+    left join pws_reg using (FRS_ID)
+  ),
+  freq as (
+    select substr(visit_date, 7, 10) as VISIT_YEAR, VISIT_REASON_CODE, count(1) as n
+    from facs
+    join visits2 using (PWSID)
+    group by 1,2
+    order by 1,2
+  )
+  select freq.*, round(n * 1.0 / SUM(n) OVER (PARTITION BY VISIT_YEAR), 4) as perc
+  from freq
+  where VISIT_YEAR >= '2010'
+")
+```
+
+
+## Proportion of health-based versus monitoring/reporting violations in carceral versus non-carceral facilities 
+
+```{r}
+sqldf("
+  with facs as (
+    select *
+    
+    from facilities
+    join frs_hifld using (HIFLD_FACILITYID)
+    left join pws_reg using (FRS_ID)
+  )
+  select HIFLD_FACILITYID is NOT NULL as carceral, ACUTE_HEALTH_BASED = 'Y' or HEALTH_BASED = 'Y' as health,
+  MONITORING_REPORTING = 'Y' as monitoring,
+  PUBLIC_NOTIF_OTHER = 'Y' as notif,
+    count(distinct VIOLATION_ID), count(distinct HIFLD_FACILITYID)
+  from violations 
+  left join facs using(PWSID)
+  group by 1,2,3,4
+")
+```
+
+
+## Ratio of formal to informal enforcement actions in carceral versus non-carceral facilities 
+
+
+```{r}
+sqldf("
+  with facs as (
+    select *
+    
+    from facilities
+    join frs_hifld using (HIFLD_FACILITYID)
+    left join pws_reg using (FRS_ID)
+  )
+  select HIFLD_FACILITYID is NOT NULL as carceral, 
+  ENFORCEMENT_CATEGORY,
+    count(distinct ENFORCEMENT_ID), count(distinct HIFLD_FACILITYID)
+  from enforcements 
+  left join facs using(PWSID)
+  group by 1,2
+")
+```
+
+
+
+## Number of formal enforcement actions at juvenile facilities 
+
+```{r}
+sqldf("
+  with facs as (
+    select *
+    
+    from facilities
+    join frs_hifld using (HIFLD_FACILITYID)
+    left join pws_reg using (FRS_ID)
+  )
+  select HIFLD_FACILITYID is NOT NULL as carceral, 
+  ENFORCEMENT_CATEGORY,
+    count(distinct ENFORCEMENT_ID), count(distinct HIFLD_FACILITYID)
+  from enforcements 
+  left join facs using(PWSID)
+  where SECURELVL = 'JUVENILE'
+  group by 1,2
+")
+```
+
+
+
+## Total number of violations in jails (county and local) 
+
+
+```{r}
+sqldf("
+  with facs as (
+    select *
+    
+    from facilities
+    join frs_hifld using (HIFLD_FACILITYID)
+    left join pws_reg using (FRS_ID)
+  )
+  select TYPE,
+    count(distinct VIOLATION_ID), count(distinct HIFLD_FACILITYID)
+  from violations 
+   join facs using(PWSID)
+  group by 1
+")
+```
+
+
+
+## Total number of violations in ICE facilities 
+
+```{r}
+sqldf("
+  with facs as (
+    select *
+    
+    from facilities
+    join frs_hifld using (HIFLD_FACILITYID)
+    left join pws_reg using (FRS_ID)
+  )
+  select ICE_FACILITY,
+    count(distinct VIOLATION_ID), count(distinct HIFLD_FACILITYID)
+  from violations 
+  left join facs using(PWSID)
+  group by 1
+")
+```
+
+
+
+
+
+## Percentage of facilities that received one or more site visits over the 10 year period 
+
+
+*NB: They visit PWSs and not facilities*
+
+```{r}
+sqldf("
+  with facs as (
+    select *
+    
+    from facilities
+    join frs_hifld using (HIFLD_FACILITYID)
+    left join pws_reg using (FRS_ID)
+  )
+  select visits.PWSID IS NOT NULL as visited, count(distinct HIFLD_FACILITYID) 
+  from facs 
+  left join visits using(PWSID)  
+  group by 1
+")
+```
+
+
+## Percentage of facilities that received a site visit in each of the 10 years
+
+
+```{r}
+sqldf("
+  with facs as (
+    select *
+    
+    from facilities
+    join frs_hifld using (HIFLD_FACILITYID)
+    left join pws_reg using (FRS_ID)
+  ),
+  facyears as (
+    select *
+    from facs, years
+  )
+  select FISCAL_YEAR, AVG(visits.PWSID IS NOT NULL) as perc 
+  from facyears
+  left join visits using(PWSID, FISCAL_YEAR)  
+  group by 1
+")
+```
+
+## The total number of people (minimum estimate) affected by health-based violations in carceral facilities and 
+
+```{r}
+sqldf("
+  with facs as (
+    select *
+    
+    from facilities
+    join frs_hifld using (HIFLD_FACILITYID)
+    left join pws_reg using (FRS_ID)
+  ), caps as (
+    select HIFLD_FACILITYID, HIFLD_CAPACITY_2020
+    from violations 
+    join facs using(PWSID)
+    where HEALTH_BASED = 'Y'
+        or ACUTE_HEALTH_BASED = 'Y'
+    group by 1,2
+  )
+  select sum(HIFLD_CAPACITY_2020) as health
+  from caps
+")
+```
+## the total number of people (minimum estimate) affected by monitoring-based violations in carceral facilities over the last 10 years
+```{r}
+sqldf("
+  with facs as (
+    select *
+    
+    from facilities
+    join frs_hifld using (HIFLD_FACILITYID)
+    left join pws_reg using (FRS_ID)
+  ), caps as (
+    select HIFLD_FACILITYID, HIFLD_CAPACITY_2020
+    from violations 
+    join facs using(PWSID)
+    where MONITORING_REPORTING = 'Y'
+    group by 1,2
+  )
+  select sum(HIFLD_CAPACITY_2020) as monitoring
+  from caps
+")
+```
+
+## Identify the list of facilities that had a health-based (or, separately, monitoring/reporting) violation in any of the 10 years and sum the capacities of those facilities. Do not double-count facilities for multiple violations. 
+
+```{r}
+sqldf("
+  with facs as (
+    select *
+    
+    from facilities
+    join frs_hifld using (HIFLD_FACILITYID)
+    left join pws_reg using (FRS_ID)
+  ), caps as (
+    select HIFLD_FACILITYID, HIFLD_CAPACITY_2020
+    from violations 
+    join facs using(PWSID)
+    where MONITORING_REPORTING = 'Y'
+    or HEALTH_BASED = 'Y'
+    or ACUTE_HEALTH_BASED = 'Y'
+    group by 1,2
+  )
+  select sum(HIFLD_CAPACITY_2020) as health_or_monitoring
+  from caps
+  ")
+```
